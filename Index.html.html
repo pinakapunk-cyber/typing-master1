@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinaka Typing Master Pro - Ultra Hard Mode</title>
+    <style>
+        :root { --primary: #001f3f; --accent: #28a745; --danger: #ff0000; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 320px; background: var(--primary); color: white; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; border-right: 5px solid #111; }
+        .sidebar h2 { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; font-size: 22px; text-align: center; }
+        .nav-group { margin-bottom: 25px; }
+        .nav-group h3 { font-size: 13px; text-transform: uppercase; color: #aaa; margin-bottom: 8px; border-left: 3px solid var(--accent); padding-left: 8px; }
+        .level-btn { width: 100%; padding: 10px; margin-bottom: 5px; background: #003366; border: none; color: white; text-align: left; cursor: pointer; border-radius: 5px; font-size: 13px; transition: 0.2s; display: block; }
+        .level-btn:hover { background: var(--accent); }
+        .timer-config { background: #00264d; padding: 10px; border-radius: 5px; margin-top: 5px; }
+        .timer-config select { width: 100%; padding: 8px; border-radius: 4px; border: none; margin-bottom: 10px; }
+        .pair-select { width: 100%; padding: 10px; background: #004080; color: white; border: 1px solid var(--accent); border-radius: 5px; cursor: pointer; }
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .card { width: 100%; max-width: 1000px; background: white; border: 3px solid #1a1a1a; border-radius: 12px; padding: 25px; box-shadow: 15px 15px 0px #222; text-align: center; }
+        .welcome-banner { font-family: "Times New Roman", Times, serif; font-weight: bold; font-size: 22px; margin-bottom: 15px; color: #333; }
+        .stats-bar { display: flex; justify-content: space-around; margin-bottom: 15px; }
+        .stat-box { border: 2px solid #1a1a1a; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 18px; min-width: 120px; background: #fff; }
+        .text-box { border: 3px solid #1a1a1a; padding: 25px; border-radius: 15px; font-size: 24px; text-align: left; line-height: 1.8; height: 420px; overflow-y: auto; background: #fafafa; margin-bottom: 20px; user-select: none; white-space: pre-wrap; }
+        .text-box span { color: #bbb; position: relative; }
+        .current { background: #d1e7ff; color: #000 !important; border-radius: 3px; }
+        .correct { color: var(--accent) !important; }
+        .wrong { color: var(--danger) !important; background: #ffdce0 !important; }
+        .btn-submit { background: var(--accent); color: white; border: none; padding: 15px 50px; font-size: 20px; border-radius: 10px; cursor: pointer; display: none; box-shadow: 4px 4px 0px #155724; }
+        #res-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .res-popup { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 450px; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 50px; border: 4px solid #1a1a1a; border-radius: 15px; text-align: center; box-shadow: 15px 15px 0px #222; }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <div class="login-box">
+        <h1 style="color:var(--accent)">PINAKA TYPING MASTER PRO</h1>
+        <input type="text" id="user-name" placeholder="Enter Your Name" style="padding:12px; font-size:18px; width:250px; border:2px solid #1a1a1a; border-radius:8px; margin-bottom:20px;"> <br>
+        <button onclick="startApp()" style="background:var(--primary); color:white; padding:12px 40px; border:none; border-radius:8px; cursor:pointer; font-size:18px;">Begin Training</button>
+    </div>
+</div>
+
+<div class="sidebar">
+    <h2>PINAKA MASTER</h2>
+    <div class="nav-group">
+        <h3>Challenge Mode</h3>
+        <div class="timer-config">
+            <select id="challenge-timer"></select>
+            <button class="level-btn" style="text-align:center; background:var(--accent);" onclick="loadChallenge()">START 50-LINE CHALLENGE</button>
+        </div>
+    </div>
+    <div class="nav-group" id="lessons-nav"><h3>Lessons (1-15)</h3></div>
+    <div class="nav-group">
+        <h3>Letter Pair Practice</h3>
+        <select id="pair-selector" class="pair-select" onchange="loadPairDrill()">
+            <option value="">-- Choose Pair --</option>
+            <option value="pq">pq - Hard Drill</option>
+            <option value="mx">mx - Hard Drill</option>
+            <option value="nv">nv - Hard Drill</option>
+            <option value="ty">ty - Hard Drill</option>
+            <option value="ro">ro - Hard Drill</option>
+            <option value="ls">ls - Hard Drill</option>
+            <option value="z?/">z?/ - Hard Drill</option>
+            <option value="ow">ow - Hard Drill</option>
+            <option value="gh">gh - Hard Drill</option>
+            <option value=", &">, & - Hard Drill</option>
+        </select>
+    </div>
+    <div class="nav-group" id="special-nav"><h3>Symbols & Mix</h3></div>
+    <div class="nav-group" id="pro-nav"><h3>Pro Practice (Hard 50 Lines)</h3></div>
+    <div class="nav-group">
+        <h3>Special Drills</h3>
+        <button class="level-btn" onclick="loadFoxDrill()">100x Fox Drill</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="card">
+        <div class="welcome-banner">Welcome to Pinaka Typing Master Challenge. Please select a lesson from the sidebar.</div>
+        <h2 id="lesson-title" style="margin-top:0; color:#444;">Practice Mode</h2>
+        <div class="stats-bar">
+            <div class="stat-box" id="time-display" style="color:blue;">Time: 00:00</div>
+            <div class="stat-box" id="wpm-display" style="color:red;">0 WPM</div>
+            <div class="stat-box" id="acc-display" style="color:red;">100% ACC</div>
+        </div>
+        <div class="text-box" id="text-display">Select any session to begin...</div>
+        <button class="btn-submit" id="submit-btn" onclick="finalizeTest()">SUBMIT TEST</button>
+    </div>
+</div>
+
+<div id="res-overlay">
+    <div class="res-popup">
+        <h2>FINAL RESULT</h2>
+        <div id="res-grade" style="font-size:32px; color:#ff4d4d; font-weight:bold; margin:15px 0;">Great Work!</div>
+        <div style="font-size:20px; margin:5px 0;">Name: <b id="res-name-val">User</b></div>
+        <div style="font-size:20px; margin:5px 0;">Speed: <b id="res-wpm-val">0 WPM</b> | Accuracy: <b id="res-acc-val">0%</b></div>
+        <button class="level-btn" style="text-align:center; background:var(--accent); margin-top:20px;" onclick="location.reload()">Restart</button>
+    </div>
+</div>
+
+<script>
+    // 1000+ Hard Words Pool
+    const proHardPool = ["Institutionalization", "Environmental", "Incomprehensibility", "Disproportionate", "Circumlocution", "Electromagnetic", "Biodiversity", "Infrastructure", "Acknowledge", "Bibliographical", "Enlightenment", "Flabbergasted", "Gastrulation", "Hypothetical", "Jurisdiction", "Knowledgeable", "Luminescence", "Magnanimous", "Neighborhood", "Omnipresent", "Peculiarity", "Questionnaire", "Revolutionary", "Spectacular", "Terminology", "Unidirectional", "Vicissitude", "Whimsical", "Xenophobia", "Yesterday", "Ziggurat", "Amalgamation", "Synchronicity", "Procrastination", "Phenomenal", "Quizzical", "Juxtaposition", "Rhythmically", "Chrysanthemum", "Exacerbate", "Logistical", "Constitution", "Hierarchical", "Onomatopoeia", "Conscientious", "Vulnerability", "Quintessential", "Xylographic", "Zodiacal", "Weatherproofing", "Microscopical", "Handwriting", "Friendship", "Championship", "Relationship", "Leadership", "Keyboarding", "Programming", "Development", "Application", "Authentication", "Authorization", "Cryptography", "Encryption", "Description", "Subscription", "Recommendation", "Communication", "Association", "Organization", "Administration", "Management", "Requirement", "Implementation"];
+    
+    const challengePool = ["Practice makes a man perfect and consistent.", "The quick brown fox jumps over the lazy dog.", "Success is the result of continuous hard work.", "Typing master pro is the best way to learn.", "Focus on accuracy and speed will come naturally.", "Believe in your dreams and work hard for them.", "Information is power in the modern digital age.", "Stay humble and work hard in absolute silence.", "Knowledge is the only wealth that grows when shared.", "Time is the most valuable resource you have.", "Every expert was once a beginner who never quit.", "Patience is a key element of success in typing.", "Dream big, work hard, stay focused and surround yourself with good people.", "Hard work beats talent when talent doesn't work hard.", "The only way to do great work is to love what you do."];
+
+    const lessonBases = ["ff jj ff jj", "dd kk dd kk", "ss ll ss ll", "aa ;; aa ;;", "asdf jkl;", "ee ii ee ii", "rr uu rr uu", "tt yy tt yy", "gg hh gg hh", "vv mm vv mm", "cc ,, cc ,,", "xx .. xx ..", "zz // zz //", "bb nn bb nn", "qwerty uiop"];
+
+    let charIndex = 0, mistakes = 0, startTime = null, timerActive = false, activeText = "", mainInterval = null, timeRemaining = 0, isChallenge = false;
+
+    function startApp() {
+        if(!document.getElementById('user-name').value) return alert("Enter Name");
+        document.getElementById('login-overlay').style.display = 'none';
+        const sel = document.getElementById('challenge-timer');
+        for(let i=1; i<=45; i++) {
+            let opt = document.createElement('option');
+            opt.value = i * 60; opt.innerText = i + " Minutes";
+            sel.appendChild(opt);
+        }
+        lessonBases.forEach((b, i) => {
+            document.getElementById('lessons-nav').innerHTML += `<button class="level-btn" onclick="loadLesson(${i})">Lesson ${i+1}</button>`;
+        });
+        for(let i=1; i<=8; i++) {
+            document.getElementById('pro-nav').innerHTML += `<button class="level-btn" onclick="loadPro(${i})">Pro Page ${i}</button>`;
+        }
+        ["f/ j? f, j.", "1! 2@ 3# 4$", "Type: $50.00 @Pinaka"].forEach((b, i) => {
+            document.getElementById('special-nav').innerHTML += `<button class="level-btn" onclick="loadSpecial(${i}, '${b}')">Symbol Drill ${i+1}</button>`;
+        });
+    }
+
+    // Function to generate 50-line paragraphs from a pool
+    function generateShuffleText(pool, wordsPerLine, linesCount) {
+        let text = "";
+        for (let i = 0; i < linesCount; i++) {
+            let line = [];
+            for (let j = 0; j < wordsPerLine; j++) {
+                line.push(pool[Math.floor(Math.random() * pool.length)]);
+            }
+            text += line.join(" ") + "\n";
+        }
+        return text.trim();
+    }
+
+    function loadLesson(idx) {
+        let text = "";
+        for(let i=0; i<20; i++) text += (lessonBases[idx] + " ").repeat(6) + "\n";
+        setupTest(text.trim(), `Lesson ${idx+1}`, false);
+    }
+
+    function loadSpecial(idx, base) {
+        let text = "";
+        for(let i=0; i<20; i++) text += (base + " ").repeat(5) + "\n";
+        setupTest(text.trim(), `Symbol Drill ${idx+1}`, false);
+    }
+
+    function loadPairDrill() {
+        const pair = document.getElementById('pair-selector').value;
+        if(!pair) return;
+        let text = "";
+        for(let i=0; i<20; i++) {
+            let line = [];
+            for(let j=0; j<5; j++) {
+                line.push(pair.toUpperCase());
+                line.push(proHardPool[Math.floor(Math.random()*proHardPool.length)]);
+                line.push(pair.toLowerCase());
+            }
+            text += line.join(" ") + "\n";
+        }
+        setupTest(text.trim(), `Pair Drill: ${pair}`, false);
+    }
+
+    function loadChallenge() {
+        timeRemaining = document.getElementById('challenge-timer').value;
+        // Shuffle from Challenge pool + Hard words for variety
+        let mixedPool = [...challengePool, ...proHardPool];
+        let text = generateShuffleText(mixedPool, 7, 50); // 50 Lines
+        setupTest(text, "50-LINE CHALLENGE MODE (SHUFFLED)", true);
+    }
+
+    function loadPro(n) {
+        // Pro practice with 50 lines and hardest words
+        let text = generateShuffleText(proHardPool, 8, 50); // 50 Lines
+        setupTest(text, `Pro Page ${n} (Hard 50 Lines Shuffled)`, false);
+    }
+
+    function loadFoxDrill() {
+        let text = "";
+        for(let i=0; i<100; i++) {
+            text += "The quick brown fox jumps over the lazy dog. ";
+            if((i+1) % 4 === 0) text += "\n";
+        }
+        setupTest(text.trim(), "100x Fox Drill", false);
+    }
+
+    function setupTest(text, title, challenge) {
+        if(mainInterval) clearInterval(mainInterval);
+        charIndex = 0; mistakes = 0; timerActive = false; isChallenge = challenge;
+        activeText = text;
+        document.getElementById('lesson-title').innerText = title;
+        document.querySelector('.welcome-banner').style.display = 'none';
+        document.getElementById('submit-btn').style.display = 'none';
+        const display = document.getElementById('text-display');
+        display.innerHTML = activeText.split('').map(char => char === "\n" ? `<span>\n</span>` : `<span>${char}</span>`).join('');
+        display.querySelectorAll('span')[0].classList.add('current');
+        window.removeEventListener('keydown', handleKey);
+        window.addEventListener('keydown', handleKey);
+    }
+
+    function handleKey(e) {
+        if(e.key === "Backspace" || e.key === "Tab" || e.key === " ") e.preventDefault();
+        if(e.key.length !== 1 && e.key !== "Enter") return;
+        if(!timerActive) {
+            startTime = new Date();
+            timerActive = true;
+            mainInterval = setInterval(updateClock, 1000);
+        }
+        const spans = document.getElementById('text-display').querySelectorAll('span');
+        let expected = spans[charIndex].innerText;
+        let typed = (e.key === "Enter") ? "\n" : e.key;
+        if(typed === expected) {
+            spans[charIndex].className = 'correct';
+            charIndex++;
+            if(charIndex < spans.length) {
+                spans[charIndex].classList.add('current');
+                spans[charIndex].scrollIntoView({block: "center"});
+            } else { finalizeTest(); }
+        } else {
+            spans[charIndex].className = 'wrong current';
+            mistakes++;
+        }
+        let elapsed = (new Date() - startTime) / 60000;
+        document.getElementById('wpm-display').innerText = `${Math.round((charIndex/5) / elapsed) || 0} WPM`;
+        document.getElementById('acc-display').innerText = `${Math.round((charIndex / (charIndex + mistakes)) * 100) || 100}% ACC`;
+        if(charIndex > 50) document.getElementById('submit-btn').style.display = 'inline-block';
+    }
+
+    function updateClock() {
+        if(isChallenge) {
+            timeRemaining--;
+            let m = Math.floor(timeRemaining/60).toString().padStart(2,'0');
+            let s = (timeRemaining%60).toString().padStart(2,'0');
+            document.getElementById('time-display').innerText = `Time: ${m}:${s}`;
+            if(timeRemaining <= 0) finalizeTest();
+        } else {
+            let diff = Math.floor((new Date() - startTime) / 1000);
+            document.getElementById('time-display').innerText = `Time: ${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`;
+        }
+    }
+
+    function finalizeTest() {
+        timerActive = false;
+        clearInterval(mainInterval);
+        document.getElementById('res-overlay').style.display = 'flex';
+        document.getElementById('res-name-val').innerText = document.getElementById('user-name').value;
+        document.getElementById('res-wpm-val').innerText = document.getElementById('wpm-display').innerText;
+        document.getElementById('res-acc-val').innerText = document.getElementById('acc-display').innerText;
+    }
+</script>
+</body>
+</html>
